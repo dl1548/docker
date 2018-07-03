@@ -1,0 +1,33 @@
+FROM centos
+
+MAINTAINER zili.li
+
+ADD nginx-1.12.2.tar.gz /usr/local/src
+
+RUN buildDeps='gcc gcc-c++ glib make autoconf openssl openssl-devel libxslt-devel gd gd-devel GeoIP GeoIP-devel pcre pcre-devel wget curl' \ 
+                && yum -y install $buildDeps \
+                && useradd -M -s /sbin/nologin nginx
+
+#多个用逗号分隔
+VOLUME ["/usr/local/nginx/html"]
+
+WORKDIR /usr/local/src/nginx-1.12.2
+
+RUN ./configure --user=nginx --group=nginx --prefix=/usr/local/nginx --with-file-aio --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module --with-http_image_filter_module --with-http_geoip_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_auth_request_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_stub_status_module \
+                && make \
+                && make install \
+                && rm -rf /usr/local/src/nginx-1.12.2
+
+ENV PATH /usr/local/nginx/sbin:$PATH                
+
+EXPOSE 80
+
+ENTRYPOINT ["nginx"]
+
+CMD ["-g","daemon off;"]
+
+#docker build -t centos_nginx:v5 .
+#docker run --name web_5 -d -p 85:80 centos_nginx:v5 
+#docker inspect web_5 的 Mounts下可看到文件挂载信息.
+#docker exec -it web_5 /bin/bash 进入容器可查看到挂载的目录,其内容和Mounts是同步的
+

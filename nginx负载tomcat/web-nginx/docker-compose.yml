@@ -1,0 +1,14 @@
+version: "3" #指定语法版本
+services: #定义服务
+  nginx:
+    container_name: web-nginx #容器名字
+    image: centos_nginx:v5 #依赖镜像
+    restart: always
+    ports:  #端口映射
+      - 80:80
+    volumes:
+      #映射文件到容器.第一个是web的,在nginx通过root指定路径.第二个是配置文件.
+      #如果不想指定web,可直接映射到nginx默认html路径.nginx配置不需要指定路径了
+      #- ./webserver:/usr/local/nginx/html
+      - ./webserver:/webserver
+      - ./nginx/nginx.conf:/usr/local/nginx/conf/nginx.conf

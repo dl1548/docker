@@ -1,0 +1,43 @@
+version: "3"
+services:
+  nginx:
+    hostname: nginx
+    build: ./nginx
+    restart: always
+    ports:
+      - 80:80
+    networks:
+      test:
+        ipv4_address: 172.88.0.88
+    volumes:
+      - ./nginx/nginx.conf:/usr/local/nginx/conf/nginx.conf
+      - ./etc/localtime:/etc/localtime
+    depends_on:
+      - tomcat1
+      - tomcat2
+
+  tomcat1:
+    hostname: tomcat1
+    build: ./tomcat
+    restart: always
+    volumes:
+      - ./webserver/tomcatA:/usr/local/apache-tomcat-8.5.24/webapps/ROOT
+      - ./etc/localtime:/etc/localtime
+    networks:
+      test:
+        ipv4_address: 172.88.0.11
+
+  tomcat2:
+    hostname: tomcat2
+    build: ./tomcat
+    restart: always
+    volumes:
+      - ./webserver/tomcatB/index.jsp:/usr/local/apache-tomcat-8.5.24/webapps/ROOT/index.jsp
+      - ./etc/localtime:/etc/localtime
+    networks:
+      test:
+        ipv4_address: 172.88.0.22
+
+networks:
+  test:
+    external: true
